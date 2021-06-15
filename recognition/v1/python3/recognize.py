@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
 import argparse
-from itertools import chain
+import itertools
+import time
 
 import grpc
 
@@ -9,8 +10,8 @@ import recognition_pb2
 import recognition_pb2_grpc
 
 
-HOST = 'smartspeech.sber.ru'
-MAX_CHUNK_SIZE = 2048
+CHUNK_SIZE = 2048
+SLEEP_TIME = 0.1
 
 ENCODING_PCM = 'pcm'
 ENCODING_OPUS = 'opus'
@@ -26,25 +27,25 @@ def try_printing_request_id(md):
             print('RequestID:', m.value)
 
 
-def generate_audio_chunks(path):
+def generate_audio_chunks(path, chunk_size=CHUNK_SIZE, sleep_time=SLEEP_TIME):
     with open(path, 'rb') as f:
-        for data in iter(lambda: f.read(MAX_CHUNK_SIZE), b''):
+        for data in iter(lambda: f.read(chunk_size), b''):
             yield recognition_pb2.RecognitionRequest(audio_chunk=data)
+            time.sleep(sleep_time)
 
 
 def recognize(args):
     ssl_cred = grpc.ssl_channel_credentials()
-
-    token_cred = grpc.access_token_call_credentials(args.jwt)
+    token_cred = grpc.access_token_call_credentials(args.token)
 
     channel = grpc.secure_channel(
-        HOST,
+        args.host,
         grpc.composite_channel_credentials(ssl_cred, token_cred),
     )
 
     stub = recognition_pb2_grpc.SmartSpeechStub(channel)
 
-    con = stub.Recognize(chain(
+    con = stub.Recognize(itertools.chain(
         (recognition_pb2.RecognitionRequest(options=args.recognition_options),),
         generate_audio_chunks(args.file),
     ))
@@ -54,7 +55,7 @@ def recognize(args):
             if not resp.eou:
                 print('Got partial result:')
             else:
-                print('Got final result:')
+                print('Got end-of-utterance result:')
 
             for i, hyp in enumerate(resp.results):
                 print('  Hyp #{}: {}'.format(i + 1, hyp.normalized_text if args.normalized_result else hyp.text))
@@ -77,7 +78,7 @@ def recognize(args):
 
 
 class Arguments:
-    NOT_RECOGNITION_OPTIONS = {'file', 'jwt', 'normalized_result', 'emotions_result'}
+    NOT_RECOGNITION_OPTIONS = {'host', 'token', 'file', 'normalized_result', 'emotions_result'}
     DURATIONS = {'no_speech_timeout', 'max_speech_timeout', 'eou_timeout'}
     REPEATED = {'words'}
     HINTS_PREFIX = 'hints_'
@@ -114,8 +115,9 @@ class Arguments:
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
+    parser.add_argument('--host', default='smartspeech.sber.ru', help='host:port of gRPC endpoint')
+    parser.add_argument('--token', required=True, default=argparse.SUPPRESS, help='access token')
     parser.add_argument('--file', required=True, default=argparse.SUPPRESS, help='audio file for recognition')
-    parser.add_argument('--jwt', required=True, default=argparse.SUPPRESS, help='authentication token')
 
     parser.add_argument('--normalized-result', default=argparse.SUPPRESS, action='store_true', help='show normalized text')
     parser.add_argument('--emotions-result', default=argparse.SUPPRESS, action='store_true', help='show emotions result')

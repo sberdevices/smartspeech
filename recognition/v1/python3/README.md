@@ -5,4 +5,4 @@
 
 # Usage
 
-    $ python3 recognize.py --jwt "<jwt>" --file "<file>"
+    $ python3 recognize.py --token "<access_token>" --file "<file>"

@@ -25,6 +25,7 @@ message RecognitionResponse {
   Emotions emotions_result = 3;  // may be set on end of utterance
   google.protobuf.Duration processed_audio_start = 4;  // starting position of processed audio
   google.protobuf.Duration processed_audio_end = 5;  // ending position of processed audio
+  BackendInfo backend_info = 6;
 }
 
 message Hints {
@@ -64,4 +65,10 @@ message Emotions {
   float positive = 1;  // confidence [0.0 - 1.0]
   float neutral = 2;
   float negative = 3;
+}
+
+message BackendInfo {
+  string model_name = 1;
+  string model_version = 2;
+  string server_version = 3;
 }
