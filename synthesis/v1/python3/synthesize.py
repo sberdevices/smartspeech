@@ -7,9 +7,6 @@ import grpc
 import synthesis_pb2
 import synthesis_pb2_grpc
 
-
-HOST = 'smartspeech.sber.ru'
-
 ENCODING_PCM = 'pcm'
 ENCODING_OPUS = 'opus'
 ENCODING_WAV = 'wav'
@@ -35,17 +32,16 @@ def try_printing_request_id(md):
 
 def synthesize(args):
     ssl_cred = grpc.ssl_channel_credentials()
-
-    token_cred = grpc.access_token_call_credentials(args.jwt)
+    token_cred = grpc.access_token_call_credentials(args.token)
 
     channel = grpc.secure_channel(
-        HOST,
+        args.host,
         grpc.composite_channel_credentials(ssl_cred, token_cred),
     )
 
     stub = synthesis_pb2_grpc.SmartSpeechStub(channel)
 
-    con = stub.Synthesize(iter((args.synthesis_options,)))
+    con = stub.Synthesize(args.synthesis_options)
 
     try:
         with open(args.file, 'wb') as f:
@@ -64,7 +60,7 @@ def synthesize(args):
 
 
 class Arguments:
-    NOT_SYNTHESIS_OPTIONS = {'file', 'jwt'}
+    NOT_SYNTHESIS_OPTIONS = {'host', 'token', 'file'}
 
     __slots__ = tuple(NOT_SYNTHESIS_OPTIONS) + ('synthesis_options',)
 
@@ -86,8 +82,9 @@ class Arguments:
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument('--file', required=True, default=argparse.SUPPRESS, help='path to synthesized audio file')
-    parser.add_argument('--jwt', required=True, default=argparse.SUPPRESS, help='authentication token')
+    parser.add_argument('--host', default='smartspeech.sber.ru', help='host:port of gRPC endpoint')
+    parser.add_argument('--token', required=True, default=argparse.SUPPRESS, help='access token')
+    parser.add_argument('--file', required=True, default=argparse.SUPPRESS, help='audio file for recognition')
 
     parser.add_argument('--text', required=True, default='')
     parser.add_argument('--audio-encoding', default=ENCODINGS_MAP[ENCODING_WAV], type=lambda x: ENCODINGS_MAP[x], help=','.join(ENCODINGS_MAP))

@@ -8,7 +8,7 @@ option go_package = "github.com/sberdevices/smartspeech/synthesis/v1;synthesis";
 option java_package = "ru.sberdevices.smartspeech.synthesis.v1";
 
 service SmartSpeech {
-  rpc Synthesize (stream SynthesisRequest) returns (stream SynthesisResponse) {
+  rpc Synthesize (SynthesisRequest) returns (stream SynthesisResponse) {
   }
 }
 

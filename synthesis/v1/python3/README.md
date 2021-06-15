@@ -5,4 +5,4 @@
 
 # Usage
 
-    $ python3 synthesize.py --jwt "<jwt>" --file "<file>" --text "<text>"
+    $ python3 synthesize.py --token "<access_token>" --file "<output>" --text "<input>"
