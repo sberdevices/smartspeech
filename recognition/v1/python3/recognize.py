@@ -83,8 +83,6 @@ class Arguments:
     REPEATED = {'words'}
     HINTS_PREFIX = 'hints_'
 
-    __slots__ = tuple(NOT_RECOGNITION_OPTIONS) + ('recognition_options',)
-
     def __init__(self):
         super().__setattr__('recognition_options', recognition_pb2.RecognitionOptions())
 
@@ -107,7 +105,7 @@ class Arguments:
             setattr(obj, key, value)
 
     def __getattr__(self, item):
-        if item in self.__slots__:
+        if item in self.NOT_RECOGNITION_OPTIONS:
             return None
         raise AttributeError(item)
 

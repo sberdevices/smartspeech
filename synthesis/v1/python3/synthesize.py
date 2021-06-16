@@ -62,8 +62,6 @@ def synthesize(args):
 class Arguments:
     NOT_SYNTHESIS_OPTIONS = {'host', 'token', 'file'}
 
-    __slots__ = tuple(NOT_SYNTHESIS_OPTIONS) + ('synthesis_options',)
-
     def __init__(self):
         super().__setattr__('synthesis_options', synthesis_pb2.SynthesisRequest())
 
@@ -74,7 +72,7 @@ class Arguments:
             setattr(self.synthesis_options, key, value)
 
     def __getattr__(self, item):
-        if item in self.__slots__:
+        if item in self.NOT_SYNTHESIS_OPTIONS:
             return None
         raise AttributeError(item)
 
