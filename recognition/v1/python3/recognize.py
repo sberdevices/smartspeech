@@ -104,11 +104,6 @@ class Arguments:
         else:
             setattr(obj, key, value)
 
-    def __getattr__(self, item):
-        if item in self.NOT_RECOGNITION_OPTIONS:
-            return None
-        raise AttributeError(item)
-
 
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -117,8 +112,8 @@ def main():
     parser.add_argument('--token', required=True, default=argparse.SUPPRESS, help='access token')
     parser.add_argument('--file', required=True, default=argparse.SUPPRESS, help='audio file for recognition')
 
-    parser.add_argument('--normalized-result', default=argparse.SUPPRESS, action='store_true', help='show normalized text')
-    parser.add_argument('--emotions-result', default=argparse.SUPPRESS, action='store_true', help='show emotions result')
+    parser.add_argument('--normalized-result', action='store_true', help='show normalized text')
+    parser.add_argument('--emotions-result', action='store_true', help='show emotions result')
 
     parser.add_argument('--audio-encoding', default=ENCODINGS_MAP[ENCODING_PCM], type=lambda x: ENCODINGS_MAP[x], help='{pcm,opus}')
     parser.add_argument('--sample-rate', default=16000, type=int, help='PCM only')

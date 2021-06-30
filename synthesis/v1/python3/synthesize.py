@@ -71,11 +71,6 @@ class Arguments:
         else:
             setattr(self.synthesis_options, key, value)
 
-    def __getattr__(self, item):
-        if item in self.NOT_SYNTHESIS_OPTIONS:
-            return None
-        raise AttributeError(item)
-
 
 def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
