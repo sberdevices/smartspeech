@@ -9,6 +9,7 @@ int main(int ac, char **av) {
   conf.parse(ac, av);
   if (!conf.validate()) {
     config::print_help();
+    return 1;
   }
 
   conf.print_params();

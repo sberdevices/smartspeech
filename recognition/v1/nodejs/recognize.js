@@ -23,7 +23,8 @@ const OPTIONS = {
 const PROTO = __dirname + '/../recognition.proto';
 
 function recognize(accessToken, file, sampleRate) {
-    const packageDefinition = protoLoader.loadSync(PROTO, {keepCase: true, longs: String, enums: String, defaults: true, oneofs: true});
+    const packageDefinition = protoLoader.loadSync(PROTO, {
+        keepCase: true, longs: String, enums: String, defaults: true, oneofs: true, includeDirs: [__dirname + '/../../../task/v1/']});
     const proto = grpc.loadPackageDefinition(packageDefinition);
 
     const service = new proto['smartspeech']['recognition']['v1']['SmartSpeech'](HOST, grpc.credentials.createSsl());

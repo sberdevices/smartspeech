@@ -79,6 +79,7 @@ def recognize(args):
 
 class Arguments:
     NOT_RECOGNITION_OPTIONS = {'host', 'token', 'file', 'normalized_result', 'emotions_result'}
+    NOT_RECOGNITION_OPTIONS.update({'ca', 'cert', 'key'})  # diff
     DURATIONS = {'no_speech_timeout', 'max_speech_timeout', 'eou_timeout'}
     REPEATED = {'words'}
     HINTS_PREFIX = 'hints_'
@@ -105,7 +106,7 @@ class Arguments:
             setattr(obj, key, value)
 
 
-def main():
+def create_parser():
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('--host', default='smartspeech.sber.ru', help='host:port of gRPC endpoint')
@@ -128,9 +129,13 @@ def main():
     parser.add_argument('--hints-enable-letters', action='store_true', help=' ')
     parser.add_argument('--hints-eou-timeout', default='0s', help=' ')
 
-    args = parser.parse_args(namespace=Arguments())
+    return parser
 
-    recognize(args)
+
+def main():
+    parser = create_parser()
+
+    recognize(parser.parse_args(namespace=Arguments()))
 
 
 if __name__ == '__main__':

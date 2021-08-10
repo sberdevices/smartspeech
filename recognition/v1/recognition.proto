@@ -2,14 +2,17 @@ syntax = "proto3";
 
 package smartspeech.recognition.v1;
 
+import "task.proto";
+
 import "google/protobuf/duration.proto";
 
 option go_package = "github.com/sberdevices/smartspeech/recognition/v1;recognition";
 option java_package = "ru.sberdevices.smartspeech.recognition.v1";
 
 service SmartSpeech {
-  rpc Recognize (stream RecognitionRequest) returns (stream RecognitionResponse) {
-  }
+  rpc Recognize (stream RecognitionRequest) returns (stream RecognitionResponse);
+
+  rpc AsyncRecognize (AsyncRecognizeRequest) returns (smartspeech.task.v1.Task);
 }
 
 message RecognitionRequest {
@@ -28,10 +31,9 @@ message RecognitionResponse {
   BackendInfo backend_info = 6;
 }
 
-message Hints {
-  repeated string words = 1;
-  bool enable_letters = 2;
-  google.protobuf.Duration eou_timeout = 3;
+message AsyncRecognizeRequest {
+  RecognitionOptions options = 1;
+  string request_file_id = 2;
 }
 
 message RecognitionOptions {
@@ -54,11 +56,24 @@ message RecognitionOptions {
   google.protobuf.Duration max_speech_timeout = 11;
 }
 
+message Hints {
+  repeated string words = 1;
+  bool enable_letters = 2;
+  google.protobuf.Duration eou_timeout = 3;
+}
+
 message Hypothesis {
+  message WordAlignment {
+    string word = 1;  // single word
+    google.protobuf.Duration start = 2;  // starting position of the word in audio stream
+    google.protobuf.Duration end = 3;  // ending position of the word in audio stream
+  }
+
   string text = 1;  // non-normalized text result
   string normalized_text = 2;  // normalized text result
   google.protobuf.Duration start = 3;  // hypothesis starting position from current utterance start
   google.protobuf.Duration end = 4;  // hypothesis final position from current utterance start
+  repeated WordAlignment word_alignments = 5;  // alignments of single words in audio stream
 }
 
 message Emotions {

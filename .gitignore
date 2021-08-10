@@ -1,3 +1,6 @@
+# cpp
+build/
+
 # node.js
 node_modules/
 package-lock.json
