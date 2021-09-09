@@ -14,10 +14,14 @@ CHUNK_SIZE = 2048
 SLEEP_TIME = 0.1
 
 ENCODING_PCM = 'pcm'
-ENCODING_OPUS = 'opus'
+
 ENCODINGS_MAP = {
     ENCODING_PCM: recognition_pb2.RecognitionOptions.PCM_S16LE,
-    ENCODING_OPUS: recognition_pb2.RecognitionOptions.OPUS
+    'opus': recognition_pb2.RecognitionOptions.OPUS,
+    'mp3': recognition_pb2.RecognitionOptions.MP3,
+    'flac': recognition_pb2.RecognitionOptions.FLAC,
+    'alaw': recognition_pb2.RecognitionOptions.ALAW,
+    'mulaw': recognition_pb2.RecognitionOptions.MULAW,
 }
 
 
@@ -116,7 +120,7 @@ def create_parser():
     parser.add_argument('--normalized-result', action='store_true', help='show normalized text')
     parser.add_argument('--emotions-result', action='store_true', help='show emotions result')
 
-    parser.add_argument('--audio-encoding', default=ENCODINGS_MAP[ENCODING_PCM], type=lambda x: ENCODINGS_MAP[x], help='{pcm,opus}')
+    parser.add_argument('--audio-encoding', default=ENCODINGS_MAP[ENCODING_PCM], type=lambda x: ENCODINGS_MAP[x], help=str(list(ENCODINGS_MAP)))
     parser.add_argument('--sample-rate', default=16000, type=int, help='PCM only')
     parser.add_argument('--model', default='general', help=' ')
     parser.add_argument('--hypotheses-count', default=1, type=int, help=' ')
@@ -128,6 +132,7 @@ def create_parser():
     parser.add_argument('--hints-words', nargs='*', default=[], help=' ')
     parser.add_argument('--hints-enable-letters', action='store_true', help=' ')
     parser.add_argument('--hints-eou-timeout', default='0s', help=' ')
+    parser.add_argument('--channels-count', default=1, type=int, help=' ')
 
     return parser
 

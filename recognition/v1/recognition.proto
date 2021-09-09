@@ -29,6 +29,7 @@ message RecognitionResponse {
   google.protobuf.Duration processed_audio_start = 4;  // starting position of processed audio
   google.protobuf.Duration processed_audio_end = 5;  // ending position of processed audio
   BackendInfo backend_info = 6;
+  int32 channel = 7;
 }
 
 message AsyncRecognizeRequest {
@@ -39,12 +40,16 @@ message AsyncRecognizeRequest {
 message RecognitionOptions {
   enum AudioEncoding {
     AUDIO_ENCODING_UNSPECIFIED = 0;
-    PCM_S16LE = 1;    // 16-bit signed little-endian (Linear PCM)
-    OPUS = 2;    // mime audio/ogg; codecs=opus
+    PCM_S16LE = 1;  // 16-bit signed little-endian (Linear PCM)
+    OPUS = 2;  // mime audio/ogg; codecs=opus
+    MP3 = 3;  // MPEG-1/2 Layer-3
+    FLAC = 4;
+    ALAW = 5;
+    MULAW = 6;
   }
 
   AudioEncoding audio_encoding = 1;
-  int32 sample_rate = 2;  // Only for PCM_16LE audio encoding
+  int32 sample_rate = 2;  // For PCM_16LE, ALAW, MULAW audio encodings
   string language = 3;  // Language code in RFC-xxxx format, i.e.: ru-RU
   string model = 4;
   int32 hypotheses_count = 5;
@@ -54,6 +59,7 @@ message RecognitionOptions {
   bool enable_partial_results = 9;
   google.protobuf.Duration no_speech_timeout = 10;
   google.protobuf.Duration max_speech_timeout = 11;
+  int32 channels_count = 12;
 }
 
 message Hints {
