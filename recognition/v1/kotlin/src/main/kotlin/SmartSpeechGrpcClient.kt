@@ -24,20 +24,25 @@ class SmartSpeechGrpcClient(private val host: String, private val getToken: () -
     }
 
     class Connection(private val stub: SmartSpeechGrpcKt.SmartSpeechCoroutineStub) {
-        var audioEncoding = "opus"
+        var format = "pcm"
         var sampleRate = 16000
         var enableMultiUtterance = false
         var enablePartialResults = false
         var model = "general"
-        var noSpeechTimeout: Int? = null
-        var maxSpeechTimeout: Int? = null
 
         suspend fun startRecognizing(input: Flow<ByteArray>): Flow<RecognitionResult> = flow {
             val requestsFlow = flow<Recognition.RecognitionRequest> {
+
+                val audioEncoding = when (format) {
+                    "pcm" -> Recognition.RecognitionOptions.AudioEncoding.PCM_S16LE
+                    "opus" -> Recognition.RecognitionOptions.AudioEncoding.OPUS
+                    else -> throw IllegalArgumentException("Wrong audio encoding ${format}. \"pcm\", \"opus\" expected")
+                }
+
                 val options = Recognition.RecognitionOptions.newBuilder()
                     .setSampleRate(sampleRate)
                     .setModel(model)
-                    .setAudioEncoding(Recognition.RecognitionOptions.AudioEncoding.PCM_S16LE)
+                    .setAudioEncoding(audioEncoding)
                     .setNoSpeechTimeout(Duration.newBuilder().setSeconds(15).build())
                     .setEnableMultiUtterance(enableMultiUtterance)
                     .setEnablePartialResults(enablePartialResults)

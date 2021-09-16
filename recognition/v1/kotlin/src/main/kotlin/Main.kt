@@ -9,8 +9,9 @@ import java.io.File
 class CommandLineArgs(parser: ArgParser) {
     val host by parser.storing("--host", help = "smartspeech host").default("smartspeech.sber.ru")
     val token by parser.storing("--token", help = "smartspeech access token")
-    val inputFile by parser.storing("--in", help = "input file")
+    val inputFile by parser.storing("--in", help = "input audio file")
     val sampleRate by parser.storing("--sr", help = "input file sample rate") { toInt() }.default { 16000 }
+    val format by parser.storing("--format", help = "input file format (pcm, opus)"). default("pcm")
 }
 
 fun main(args: Array<String>) = runBlocking {
@@ -29,14 +30,15 @@ fun main(args: Array<String>) = runBlocking {
     val smartSpeechGrpcClient = SmartSpeechGrpcClient(parsedArgs.host) { parsedArgs.token }
     val smartSpeechConnection = smartSpeechGrpcClient.createConnection().apply {
         sampleRate = parsedArgs.sampleRate
+        format = parsedArgs.format
     }
 
     val readFileFlow = flow {
         File(parsedArgs.inputFile).inputStream().use { input ->
             while (true) {
-                val opusBuffer = ByteArray(4096)
-                if (input.read(opusBuffer) <= 0) break
-                emit(opusBuffer)
+                val fileBuffer = ByteArray(4096)
+                if (input.read(fileBuffer) <= 0) break
+                emit(fileBuffer)
                 delay(100)
             }
         }
