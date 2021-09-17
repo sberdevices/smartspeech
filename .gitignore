@@ -1,6 +1,10 @@
 # cpp
 build/
 
+#kotlin
+target/
+dependency-reduced-pom.xml
+
 # node.js
 node_modules/
 package-lock.json
