@@ -22,6 +22,7 @@ fun main(args: Array<String>) = runBlocking {
             host = $host
             token = $token
             inputFile = $inputFile
+            format = $format
             sampleRate = $sampleRate
         """.trimIndent()
         )
