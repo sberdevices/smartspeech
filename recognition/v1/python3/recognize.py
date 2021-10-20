@@ -29,20 +29,6 @@ ENCODINGS_MAP = {
     'mulaw': recognition_pb2.RecognitionOptions.MULAW,
 }
 
-# CHUNK_SIZE = 1024
-# audio = pyaudio.PyAudio()
-# # start Recording
-# frames = []
-# stream = audio.open(format=pyaudio.paInt16, channels=1,
-#                 rate=8000, input=True,
-#                 frames_per_buffer=CHUNK_SIZE)
-# print("recording...")
-
-# for i in range(0, 100):
-#     data = stream.read(CHUNK_SIZE)
-#     frames.append(data)
-# print("finished recording")
-
 
 def auth(client_id, client_secret):
     auth_code = base64.b64encode(bytes(f"{client_id}:{client_secret}", "ascii")).decode('ascii')
