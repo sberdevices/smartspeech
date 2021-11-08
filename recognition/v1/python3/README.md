@@ -1,6 +1,6 @@
 # Installation
 
-    $ pip3 install grpcio-tools
+    $ pip3 install grpcio-tools requests pyaudio
     $ python3 -m grpc_tools.protoc -I .. -I ../../../task/v1 --python_out=. --grpc_python_out=. ../recognition.proto ../../../task/v1/{storage,task}.proto
 
 # Usage
