@@ -60,6 +60,8 @@ message RecognitionOptions {
   google.protobuf.Duration no_speech_timeout = 10;
   google.protobuf.Duration max_speech_timeout = 11;
   int32 channels_count = 12;
+  reserved 13;
+  repeated string insight_models = 14; // Only for asynchronous requests
 }
 
 message Hints {
