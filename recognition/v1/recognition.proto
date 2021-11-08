@@ -30,6 +30,7 @@ message RecognitionResponse {
   google.protobuf.Duration processed_audio_end = 5;  // ending position of processed audio
   BackendInfo backend_info = 6;
   int32 channel = 7;
+  SpeakerInfo speaker_info = 8;
 }
 
 message AsyncRecognizeRequest {
@@ -60,12 +61,20 @@ message RecognitionOptions {
   google.protobuf.Duration no_speech_timeout = 10;
   google.protobuf.Duration max_speech_timeout = 11;
   int32 channels_count = 12;
+  SpeakerSeparationOptions speaker_separation_options = 13;
+  repeated string insight_models = 14; // Only for asynchronous requests
 }
 
 message Hints {
   repeated string words = 1;
   bool enable_letters = 2;
   google.protobuf.Duration eou_timeout = 3;
+}
+
+message SpeakerSeparationOptions {
+  bool enable = 1;
+  bool enable_only_main_speaker = 2;  // return only main speaker
+  int32 count = 3;  // number of expected speakers
 }
 
 message Hypothesis {
@@ -92,4 +101,9 @@ message BackendInfo {
   string model_name = 1;
   string model_version = 2;
   string server_version = 3;
+}
+
+message SpeakerInfo {
+  int32 speaker_id = 1;
+  float main_speaker_confidence = 2;  // main speaker feature [0.0 - 1.0]
 }
